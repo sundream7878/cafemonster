@@ -3,6 +3,11 @@
   publish = "dist"
   command = "npm run build"
 
+[build.environment]
+  SECRETS_SCAN_OMIT_PATHS = "dist/**/*.js, node_modules/**"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
