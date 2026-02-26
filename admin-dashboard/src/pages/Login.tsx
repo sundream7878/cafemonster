@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent } from '../components/ui/Card';
+import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Lock, UserPlus, HeartPulse, ChevronRight } from 'lucide-react';
+import { UserPlus, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const Login = () => {

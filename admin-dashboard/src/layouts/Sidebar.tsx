@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Key, Users, LogOut, ShieldCheck, HeartPulse } from 'lucide-react';
+import { LayoutDashboard, Key, Users, LogOut } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
