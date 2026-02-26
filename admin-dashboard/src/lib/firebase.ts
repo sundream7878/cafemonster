@@ -13,12 +13,12 @@ import { getFirestore } from "firebase/firestore";
 // 5. Paste it below:
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDv8-JlxdcPV_s39Sf0qM9brX8ZH3YpIAs",
-    authDomain: "n-place-db.firebaseapp.com",
-    projectId: "n-place-db",
-    storageBucket: "n-place-db.firebasestorage.app",
-    messagingSenderId: "1054494410598",
-    appId: "1:1054494410598:web:282d9a7db4dd9ff284eaa7"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
