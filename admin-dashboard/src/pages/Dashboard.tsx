@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
+import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { Card } from '../components/ui/Card';
-import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Search, Calendar, Bell, Settings, ChevronRight, Key, Activity, Layers, Smartphone, Monitor } from 'lucide-react';
+import { ChevronRight, Layers, Activity, Key, Smartphone, Monitor, Settings } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 const categories = [
     { label: "PlaceDB 수집", count: 5, icon: Layers, color: "bg-blue-100 text-blue-600" },
@@ -11,15 +14,87 @@ const categories = [
     { label: "기타 도구", count: 8, icon: Key, color: "bg-purple-100 text-purple-600" },
 ];
 
-const recruitmentProgress = [
-    { name: "김태희", type: "PlaceDB", status: "사용 중", statusColor: "bg-blue-500" },
-    { name: "박서준", type: "카페 크롤러", status: "만료 예정", statusColor: "bg-orange-400" },
-    { name: "이지은", type: "스텔스 댓글", status: "정지", statusColor: "bg-gray-400" },
-    { name: "최우식", type: "PlaceDB", status: "사용 중", statusColor: "bg-blue-500" },
-    { name: "강동원", type: "페이퍼 크롤러", status: "사용 중", statusColor: "bg-blue-500" },
-];
+interface RecentLicense {
+    name: string;
+    type: string;
+    status: string;
+    statusColor: string;
+}
+
+interface RecentBuyer {
+    name: string;
+    channel: string;
+}
 
 export const Dashboard = () => {
+    const [recentLicenses, setRecentLicenses] = useState<RecentLicense[]>([]);
+    const [recentBuyers, setRecentBuyers] = useState<RecentBuyer[]>([]);
+
+    useEffect(() => {
+        // Dashboard Licenses Sync
+        const qLic = query(
+            collection(db, 'licenses'),
+            orderBy('created_at', 'desc'),
+            limit(5)
+        );
+
+        const unsubscribeLic = onSnapshot(qLic, (snapshot) => {
+            const data = snapshot.docs.map(doc => {
+                const item = doc.data();
+                const expireDate = item.expire_date?.seconds ? new Date(item.expire_date.seconds * 1000) : null;
+                const isExpired = expireDate && expireDate < new Date();
+
+                let status = "사용 가능";
+                let statusColor = "bg-blue-500";
+
+                if (item.status === 'blocked') {
+                    status = "정지";
+                    statusColor = "bg-gray-400";
+                } else if (isExpired) {
+                    status = "만료";
+                    statusColor = "bg-rose-500";
+                } else if (item.status === 'unused') {
+                    status = "대기중";
+                    statusColor = "bg-indigo-400";
+                } else if (expireDate) {
+                    const daysLeft = Math.ceil((expireDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                    if (daysLeft <= 7) {
+                        status = "만료 예정";
+                        statusColor = "bg-orange-400";
+                    }
+                }
+
+                return {
+                    name: item.buyer_name || "Unknown",
+                    type: item.product_id || "PlaceDB",
+                    status,
+                    statusColor
+                };
+            });
+            setRecentLicenses(data);
+        });
+
+        // Dashboard Buyers Sync
+        const qBuy = query(
+            collection(db, 'buyers'),
+            orderBy('created_at', 'desc'),
+            limit(5)
+        );
+
+        const unsubscribeBuy = onSnapshot(qBuy, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({
+                name: doc.data().name,
+                channel: doc.data().channel || "Direct"
+            }));
+            setRecentBuyers(data);
+        });
+
+        return () => {
+            unsubscribeLic();
+            unsubscribeBuy();
+        };
+    }, []);
+
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
             {/* Middle Content Column (8 Units) */}
@@ -28,8 +103,8 @@ export const Dashboard = () => {
                 <Card className="banner-gradient p-0 overflow-hidden text-white relative h-64 shadow-premium">
                     <div className="p-10 flex flex-col justify-center h-full max-w-md relative z-10">
                         <h2 className="text-3xl font-black mb-3">좋은 아침입니다, 관리자님!</h2>
-                        <p className="text-white/80 font-medium mb-6 leading-relaxed">오늘은 75개의 새로운 라이선스 발행 요청이 대기 중입니다. 지금 바로 확인해 보세요.</p>
-                        <Button variant="secondary" className="w-fit px-8 h-12 bg-white text-indigo-600">요청 내역 보기</Button>
+                        <p className="text-white/80 font-medium mb-6 leading-relaxed">라이선스 현황과 신규 구매자 내역을 한눈에 확인하세요.</p>
+                        <Button variant="secondary" className="w-fit px-8 h-12 bg-white text-indigo-600" onClick={() => window.location.hash = '#/licenses'}>요청 내역 보기</Button>
                     </div>
                     <img
                         src="/dashboard_banner_illustration.webp"
@@ -75,18 +150,24 @@ export const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
-                                {recruitmentProgress.map((row, idx) => (
-                                    <tr key={idx} className={cn("group transition-colors", idx === 2 ? "bg-indigo-50/50" : "hover:bg-slate-50/30")}>
-                                        <td className="px-8 py-5 font-bold text-slate-700 text-sm">{row.name}</td>
-                                        <td className="px-8 py-5 font-bold text-slate-500 text-sm">{row.type}</td>
-                                        <td className="px-8 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <div className={cn("h-2 w-2 rounded-full", row.statusColor)} />
-                                                <span className="text-sm font-bold text-slate-600">{row.status}</span>
-                                            </div>
-                                        </td>
+                                {recentLicenses.length > 0 ? (
+                                    recentLicenses.map((row, idx) => (
+                                        <tr key={idx} className="group transition-colors hover:bg-slate-50/30">
+                                            <td className="px-8 py-5 font-bold text-slate-700 text-sm">{row.name}</td>
+                                            <td className="px-8 py-5 font-bold text-slate-500 text-sm">{row.type}</td>
+                                            <td className="px-8 py-5">
+                                                <div className="flex items-center gap-2">
+                                                    <div className={cn("h-2 w-2 rounded-full", row.statusColor)} />
+                                                    <span className="text-sm font-bold text-slate-600">{row.status}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={3} className="px-8 py-10 text-center text-slate-400 text-sm font-medium">발행된 라이선스가 없습니다.</td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </Card>
@@ -102,28 +183,26 @@ export const Dashboard = () => {
                         <Button variant="ghost" className="text-indigo-600 font-bold p-0 h-auto">모두 보기</Button>
                     </div>
                     <div className="space-y-4">
-                        {[
-                            { name: "Mike Tyson", for: "iOS Developer", img: "M" },
-                            { name: "Zara Thomas", for: "Content Designer", img: "Z" },
-                            { name: "Neelu Abraham", for: "iOS Developer", img: "N" },
-                        ].map((user, i) => (
-                            <div key={i} className="flex items-center gap-4 group cursor-pointer p-2 rounded-2xl hover:bg-white transition-colors">
-                                <img src={`https://ui-avatars.com/api/?name=${user.name}&background=EEF2FF&color=6366F1`} className="h-12 w-12 rounded-2xl" alt={user.name} />
-                                <div className="flex-1">
-                                    <p className="text-sm font-black text-slate-800 leading-tight">{user.name}</p>
-                                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">Applied for {user.for}</p>
+                        {recentBuyers.length > 0 ? (
+                            recentBuyers.map((user, i) => (
+                                <div key={i} className="flex items-center gap-4 group cursor-pointer p-2 rounded-2xl hover:bg-white transition-colors">
+                                    <img src={`https://ui-avatars.com/api/?name=${user.name}&background=EEF2FF&color=6366F1`} className="h-12 w-12 rounded-2xl" alt={user.name} />
+                                    <div className="flex-1">
+                                        <p className="text-sm font-black text-slate-800 leading-tight">{user.name}</p>
+                                        <p className="text-[11px] text-slate-400 font-bold mt-0.5">Contact via {user.channel}</p>
+                                    </div>
+                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600 bg-indigo-50"><Settings className="h-3 w-3" /></Button>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600 bg-indigo-50"><ChevronRight className="h-3 w-3" /></Button>
+                                    </div>
                                 </div>
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600 bg-indigo-50"><Settings className="h-3 w-3" /></Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600 bg-indigo-50"><ChevronRight className="h-3 w-3" /></Button>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-xs text-slate-400 font-bold text-center py-4">신규 구매자가 없습니다.</p>
+                        )}
                     </div>
                 </div>
             </div>
         </div>
     );
 };
-
-import { cn } from '../lib/utils';

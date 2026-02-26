@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
+import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Search, Loader2, RefreshCw, Trash2, Power, Users, Filter, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { Search, Loader2, Trash2, Power, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { cn } from '../lib/utils';
 
 interface License {
     id: string;
     serial_key: string;
     product_id: string;
     buyer_name: string;
-    status: 'active' | 'unused' | 'expired' | 'blocked';
+    status: 'active' | 'used' | 'unused' | 'expired' | 'blocked';
     expire_date: any;
     created_at: any;
     bound_value?: string;
@@ -42,12 +43,35 @@ export const LicenseList = () => {
         license.serial_key.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const getStatusInfo = (status: string) => {
-        switch (status) {
-            case 'active': return { label: '사용가능', color: 'text-emerald-600 bg-emerald-50', icon: CheckCircle2 };
-            case 'unused': return { label: '대기중', color: 'text-indigo-600 bg-indigo-50', icon: Clock };
-            case 'blocked': return { label: '정지', color: 'text-rose-600 bg-rose-50', icon: AlertCircle };
-            default: return { label: '만료', color: 'text-slate-400 bg-slate-50', icon: AlertCircle };
+    const getStatusInfo = (license: License) => {
+        const expireDate = license.expire_date?.seconds ? new Date(license.expire_date.seconds * 1000) : null;
+        const now = new Date();
+        const isExpired = expireDate && expireDate < now;
+
+        if (license.status === 'blocked') {
+            return { label: '정지', color: 'text-rose-600 bg-rose-50', icon: AlertCircle };
+        }
+
+        if (isExpired) {
+            return { label: '만료', color: 'text-slate-400 bg-slate-50', icon: AlertCircle };
+        }
+
+        // Check for "Expiring Soon" (within 7 days)
+        if (expireDate && (license.status === 'active' || license.status === 'used')) {
+            const daysLeft = Math.ceil((expireDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            if (daysLeft <= 7) {
+                return { label: '만료 예정', color: 'text-orange-600 bg-orange-50', icon: Clock };
+            }
+        }
+
+        switch (license.status) {
+            case 'active':
+            case 'used':
+                return { label: '사용중', color: 'text-emerald-600 bg-emerald-50', icon: CheckCircle2 };
+            case 'unused':
+                return { label: '대기중', color: 'text-indigo-600 bg-indigo-50', icon: Clock };
+            default:
+                return { label: '사용중', color: 'text-emerald-600 bg-emerald-50', icon: CheckCircle2 };
         }
     };
 
@@ -86,7 +110,7 @@ export const LicenseList = () => {
                         {loading ? (
                             <tr><td colSpan={5} className="py-20 text-center"><Loader2 className="mx-auto h-8 w-8 animate-spin text-indigo-200" /></td></tr>
                         ) : filteredLicenses.map((lic) => {
-                            const status = getStatusInfo(lic.status);
+                            const status = getStatusInfo(lic);
                             return (
                                 <tr key={lic.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="px-10 py-6 font-black text-slate-800">{lic.buyer_name}</td>
@@ -120,4 +144,3 @@ export const LicenseList = () => {
     );
 };
 
-import { cn } from '../lib/utils';
