@@ -45,6 +45,27 @@ export const Login = () => {
         }
     };
 
+    const handleCreateChiuAdmin = async () => {
+        if (!confirm("관리자 계정(chiu3@naver.com)을 생성하시겠습니까?")) return;
+        setLoading(true);
+        try {
+            await createUserWithEmailAndPassword(auth, "chiu3@naver.com", "lichi8989)");
+            alert("계정이 생성되었습니다! 이제 로그인해 주세요.");
+            setEmail("chiu3@naver.com");
+            setPassword("lichi8989)");
+        } catch (err: any) {
+            if (err.code === 'auth/email-already-in-use') {
+                alert("이미 생성된 계정입니다. 해당 정보로 로그인해 주세요.");
+                setEmail("chiu3@naver.com");
+                setPassword("lichi8989)");
+            } else {
+                alert("생성 실패: " + err.message);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#F4F6FB] px-4">
             <motion.div
@@ -99,12 +120,22 @@ export const Login = () => {
                             <Button
                                 type="button"
                                 variant="ghost"
-                                className="w-full text-xs font-bold text-slate-400 hover:text-primary transition-colors hover:bg-transparent h-auto p-0"
+                                className="w-full text-xs font-bold text-slate-400 hover:text-primary transition-colors hover:bg-transparent h-auto p-0 mb-3"
                                 onClick={handleCreateAdmin}
                                 disabled={loading}
                             >
                                 <UserPlus className="mr-2 h-4 w-4" />
                                 관리자 초기 계정 생성 (admin / 123456)
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="w-full text-xs font-bold text-slate-400 hover:text-primary transition-colors hover:bg-transparent h-auto p-0"
+                                onClick={handleCreateChiuAdmin}
+                                disabled={loading}
+                            >
+                                <UserPlus className="mr-2 h-4 w-4" />
+                                메인 관리자 계정 생성 (chiu3@naver.com / lichi8989))
                             </Button>
                         </div>
                     </form>
