@@ -10,6 +10,7 @@ export const Sidebar = () => {
         { icon: LayoutDashboard, label: '대시보드', href: '/' },
         { icon: Key, label: '발행 도구', href: '/generator' },
         { icon: Users, label: '전체 관리', href: '/licenses' },
+        { icon: HelpCircle, label: '고객센터', href: '/support' },
     ];
 
     const buyerNavItems = [

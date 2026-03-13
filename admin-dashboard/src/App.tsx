@@ -46,6 +46,9 @@ function AppRoutes() {
                     <DashboardLayout />
                 </ProtectedRoute>
             }>
+                {/* Common Routes */}
+                <Route path="support" element={<CustomerSupport />} />
+
                 {/* Admin Routes */}
                 {role === 'admin' && (
                     <>
@@ -58,7 +61,6 @@ function AppRoutes() {
                 {/* Buyer Routes */}
                 {role === 'buyer' && (
                     <>
-                        <Route path="support" element={<CustomerSupport />} />
                         <Route path="*" element={<Navigate to="/support" replace />} />
                         <Route index element={<Navigate to="/support" replace />} />
                     </>
