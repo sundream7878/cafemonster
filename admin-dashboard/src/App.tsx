@@ -10,7 +10,7 @@ import { Login } from './pages/Login';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    const { user, loading } = useAuth();
+    const { user, email, loading } = useAuth();
 
     if (loading) {
         return (
@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         );
     }
 
-    if (!user) {
+    if (!user || !email) {
         return <Navigate to="/login" replace />;
     }
 
@@ -55,7 +55,6 @@ function AppRoutes() {
                         <Route index element={<Dashboard />} />
                         <Route path="generator" element={<LicenseGenerator />} />
                         <Route path="licenses" element={<LicenseList />} />
-                        <Route path="*" element={<Navigate to="/" replace />} />
                     </>
                 )}
                 {/* Buyer Routes */}
