@@ -214,7 +214,7 @@ export const CustomerSupport = () => {
                         // Check ownership by verified email first, fallback to UID
                         const isOwn = 
                             (ticket.email && verifiedEmail && ticket.email.toLowerCase() === verifiedEmail.toLowerCase()) || 
-                            (ticket.uid === user?.uid);
+                            (ticket.uid === user?.id);
                             
                         const isExpanded = expandedTicketId === ticket.id;
                         const canViewDetail = isAdmin || isOwn;
