@@ -150,6 +150,7 @@ export const Login = () => {
                 await supabase.auth.signInAnonymously();
             }
             
+            const emailKey = email.toLowerCase();
             localStorage.setItem('user_email', emailKey);
             localStorage.setItem('buyer_email', emailKey); 
             localStorage.setItem('remember_email', emailKey); // 자동완성용 저장
