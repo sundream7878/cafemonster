@@ -197,7 +197,7 @@ export const Login = () => {
                                         id="email"
                                         name="email"
                                         type="email"
-                                        autocomplete="email"
+                                        autoComplete="email"
                                         placeholder="이메일을 입력해주세요"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
