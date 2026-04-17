@@ -1,7 +1,7 @@
 import { supabase } from './lib/supabase';
 
 const ADMINS = [
-    'chiu01@naver.com',
+    'chiu369@naver.com',
     'sundream7878@gmail.com'
 ];
 

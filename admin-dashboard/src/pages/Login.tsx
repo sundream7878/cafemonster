@@ -11,7 +11,8 @@ import { useAuth } from '../context/AuthContext';
 
 export const Login = () => {
     const { refreshRole } = useAuth();
-    const [email, setEmail] = useState('');
+    // 로컬 스토리지에서 저장된 이메일 불러오기
+    const [email, setEmail] = useState(() => localStorage.getItem('remember_email') || '');
     const [otp, setOtp] = useState('');
     const [otpStep, setOtpStep] = useState(1); // 1: Email, 2: OTP
     const [error, setError] = useState('');
@@ -152,6 +153,7 @@ export const Login = () => {
             const emailKey = email.toLowerCase();
             localStorage.setItem('user_email', emailKey);
             localStorage.setItem('buyer_email', emailKey); 
+            localStorage.setItem('remember_email', emailKey); // 자동완성용 저장
             
             await refreshRole();
             navigate('/');
@@ -192,7 +194,10 @@ export const Login = () => {
                                 <div className="space-y-2">
                                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">이메일 주소</label>
                                     <Input
+                                        id="email"
+                                        name="email"
                                         type="email"
+                                        autocomplete="email"
                                         placeholder="이메일을 입력해주세요"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
