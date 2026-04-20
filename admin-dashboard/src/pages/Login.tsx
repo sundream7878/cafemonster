@@ -62,7 +62,7 @@ export const Login = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    from: '3Monster <onboarding@resend.dev>',
+                    from: '3Monster <admin@3monster.net>',
                     to: [emailKey],
                     subject: '[3Monster] 로그인 인증번호',
                     html: `
