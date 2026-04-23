@@ -110,12 +110,10 @@ export const LicenseGenerator = () => {
                                         value={formData.license_type}
                                         onChange={(e) => setFormData({ ...formData, license_type: e.target.value })}
                                     >
-                                        <option value="1M">1개월</option>
-                                        <option value="3M">3개월</option>
-                                        <option value="6M">6개월</option>
-                                        <option value="1Y">1년</option>
-                                        <option value="LIFETIME">LIFETIME</option>
-                                        <option value="TEST">TEST (1일/100건)</option>
+                                        <option value="3M">3개월권 (Standard)</option>
+                                        <option value="6M">6개월권 (Premium)</option>
+                                        <option value="1Y">1년권 (VIP)</option>
+                                        <option value="TEST">무료 체험판 (1일)</option>
                                     </select>
                                 </div>
                             </div>
