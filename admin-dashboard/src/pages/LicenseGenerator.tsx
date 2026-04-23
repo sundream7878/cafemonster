@@ -84,29 +84,34 @@ export const LicenseGenerator = () => {
             </div>
 
             <div className="grid gap-8 lg:grid-cols-12">
-                <Card className="lg:col-span-8 p-0 overflow-hidden shadow-2xl border-none ring-1 ring-slate-200">
-                    <CardHeader className="p-12 border-b border-slate-100 bg-slate-50/50">
-                        <CardTitle className="text-2xl font-black text-slate-800 tracking-tight">라이선스 정보 입력</CardTitle>
-                        <p className="text-slate-400 font-bold mt-2 text-sm">정확한 정보를 입력하면 즉시 활성화 키가 발행됩니다.</p>
+                <Card className="lg:col-span-8 p-0 overflow-hidden shadow-[0_20px_50px_rgba(8,_112,_184,_0.1)] border-2 border-slate-800 rounded-3xl bg-white">
+                    <CardHeader className="p-12 border-b-2 border-slate-200 bg-slate-50">
+                        <CardTitle className="text-3xl font-black text-slate-900 tracking-tighter">라이선스 정보 입력</CardTitle>
+                        <p className="text-slate-600 font-bold mt-3 text-base">각 항목을 빠짐없이 입력해 주세요. (경계선이 뚜렷한 고대비 모드)</p>
                     </CardHeader>
                     <CardContent className="p-12">
-                        <form onSubmit={handleSubmit} className="space-y-10">
-                            <div className="grid grid-cols-2 gap-8">
+                        <form onSubmit={handleSubmit} className="space-y-12">
+                            <div className="grid grid-cols-2 gap-10">
                                 <div className="space-y-4">
-                                    <label className="text-[13px] font-black text-slate-500 uppercase tracking-widest ml-1">대상 제품</label>
-                                    <select
-                                        className="w-full h-16 rounded-2xl bg-slate-100/80 px-6 text-base font-black border-2 border-transparent focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer"
-                                        value={formData.product_id}
-                                        onChange={(e) => setFormData({ ...formData, product_id: e.target.value })}
-                                    >
-                                        <option value="NPlace-DB">🏢 NPlace-DB (Naver Place)</option>
-                                        <option value="CafeCrawler">☕ CafeCrawler</option>
-                                    </select>
+                                    <label className="text-sm font-black text-slate-900 uppercase tracking-widest ml-1">대상 제품 선택</label>
+                                    <div className="relative">
+                                        <select
+                                            className="w-full h-16 rounded-2xl bg-white px-6 text-lg font-black border-2 border-slate-400 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none transition-all appearance-none cursor-pointer text-slate-900"
+                                            value={formData.product_id}
+                                            onChange={(e) => setFormData({ ...formData, product_id: e.target.value })}
+                                        >
+                                            <option value="NPlace-DB">🏢 NPlace-DB (네이버 플레이스)</option>
+                                            <option value="CafeCrawler">☕ CafeCrawler (카페 크롤러)</option>
+                                        </select>
+                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <ChevronRight className="w-5 h-5 text-slate-400 rotate-90" />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="text-[13px] font-black text-slate-500 uppercase tracking-widest ml-1">이용 기간</label>
+                                    <label className="text-sm font-black text-slate-900 uppercase tracking-widest ml-1">이용 기간 선택</label>
                                     <select
-                                        className="w-full h-16 rounded-2xl bg-slate-100/80 px-6 text-base font-black border-2 border-transparent focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer text-indigo-600"
+                                        className="w-full h-16 rounded-2xl bg-white px-6 text-lg font-black border-2 border-slate-400 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none transition-all appearance-none cursor-pointer text-indigo-700"
                                         value={formData.license_type}
                                         onChange={(e) => setFormData({ ...formData, license_type: e.target.value })}
                                     >
@@ -118,29 +123,29 @@ export const LicenseGenerator = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <label className="text-[13px] font-black text-slate-500 uppercase tracking-widest ml-1">구매자 상세 정보</label>
+                                <label className="text-sm font-black text-slate-900 uppercase tracking-widest ml-1">구매자 상세 정보 (성함/업체명)</label>
                                 <Input
                                     required
-                                    placeholder="구매자 성함 또는 업체명을 입력하세요"
-                                    className="h-16 bg-slate-100/80 border-2 border-transparent focus:border-indigo-500 text-lg font-bold px-6 rounded-2xl"
+                                    placeholder="구매자 정보를 입력하세요"
+                                    className="h-16 bg-white border-2 border-slate-400 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 text-xl font-black px-6 rounded-2xl text-slate-900 placeholder:text-slate-300"
                                     value={formData.buyer_name}
                                     onChange={e => setFormData({ ...formData, buyer_name: e.target.value })}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-8">
+                            <div className="grid grid-cols-2 gap-10">
                                 <div className="space-y-4">
-                                    <label className="text-[13px] font-black text-slate-500 uppercase tracking-widest ml-1">연락처</label>
-                                    <Input placeholder="010-0000-0000" className="h-16 bg-slate-100/80 text-lg font-bold px-6" value={formData.contact} onChange={e => setFormData({ ...formData, contact: e.target.value })} />
+                                    <label className="text-sm font-black text-slate-900 uppercase tracking-widest ml-1">연락처</label>
+                                    <Input placeholder="010-0000-0000" className="h-16 bg-white border-2 border-slate-400 text-xl font-black px-6 text-slate-900" value={formData.contact} onChange={e => setFormData({ ...formData, contact: e.target.value })} />
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="text-[13px] font-black text-slate-500 uppercase tracking-widest ml-1">판매 가격 (KRW)</label>
-                                    <Input placeholder="금액 입력" className="h-16 bg-slate-100/80 text-lg font-bold px-6" value={formData.price_sold} onChange={e => setFormData({ ...formData, price_sold: e.target.value })} />
+                                    <label className="text-sm font-black text-slate-900 uppercase tracking-widest ml-1">판매 가격 (KRW)</label>
+                                    <Input placeholder="금액 입력" className="h-16 bg-white border-2 border-slate-400 text-xl font-black px-6 text-slate-900" value={formData.price_sold} onChange={e => setFormData({ ...formData, price_sold: e.target.value })} />
                                 </div>
                             </div>
 
-                            <Button type="submit" className="w-full h-20 text-white font-black text-xl shadow-xl shadow-indigo-200 hover:scale-[1.01] active:scale-[0.99] transition-all bg-indigo-600 rounded-2xl" isLoading={loading}>
-                                라이선스 즉시 발행하기 <ChevronRight className="ml-2 w-6 h-6" />
+                            <Button type="submit" className="w-full h-24 text-white font-black text-2xl shadow-2xl hover:bg-indigo-700 active:scale-[0.98] transition-all bg-indigo-600 rounded-3xl border-b-8 border-indigo-900" isLoading={loading}>
+                                라이선스 즉시 발행하기 <ChevronRight className="ml-3 w-8 h-8" />
                             </Button>
                         </form>
                     </CardContent>
